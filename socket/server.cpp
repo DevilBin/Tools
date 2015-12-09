@@ -70,14 +70,14 @@ private:
 
 int server::init_server(int port) {
     int server_fd = socket(PF_INET, SOCK_STREAM, 0);
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(port);
-	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	if(bind(server_fd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0) {
-		perror("Serverfd bind failed!\n");
-		exit(1);
-	}
-	return server_fd;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    if(bind(server_fd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0) {
+        perror("Serverfd bind failed!\n");
+        exit(1);
+    }
+    return server_fd;
 }
 
 int server::wait_file_name(int server_fd) {
