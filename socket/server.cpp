@@ -105,7 +105,7 @@ void server::tweak_client(int server_fd, char* file_name) {
         pthread_create(&(tid[i]), NULL, tcp_send_thread, (void *)args);
     }
     for(int i = 0; i < THREAD_NUM; ++i) {
-		pthread_join(tid[i], NULL);
+	pthread_join(tid[i], NULL);
     }
 }
 void* tcp_send_thread(void* arg) {
