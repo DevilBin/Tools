@@ -391,12 +391,17 @@ public:
 void encrypt(string origin_filename, string keys) {
     int index = 0;
     char buffer_c;
+    clock_t start, end;
     unsigned char buffer[8];
     string encrypt_filename;
 
     encrypt_filename = origin_filename + ".des";
     ifstream fin(origin_filename.c_str());
-    ofstream fout(encrypt_filename.c_str());
+    fin.seekg(0, std::ios::end);
+    long long int length = fin.tellg();
+    fin.seekg(0, std::ios::beg);
+
+    ofstream fout(encrypt_filename.c_str(), std::ios::binary);
     if(fin.fail() || fout.fail()) {
         cout << "[E]: Open file failed." << endl;
         exit(0);
@@ -406,6 +411,7 @@ void encrypt(string origin_filename, string keys) {
     File_class test_file;
     deque<unsigned char> result;
     
+    start = clock();
     while(fin.get(buffer_c)) {
         buffer[index] = buffer_c;
         if(index == 7) {
@@ -425,6 +431,11 @@ void encrypt(string origin_filename, string keys) {
     for(int i = 0; i < 64; ++i) {
         fout << result[i];
     }
+    end = clock();
+    double time_used = (end - start) / CLOCKS_PER_SEC;
+    double speed = static_cast<double>(length) / time_used;
+    cout << "[I]: Encrypt time was: " << time_used << " second." << endl;
+    cout << "[I]: Encrypt speed was: " << speed / 1024 << "kB/s." << endl;
     fin.close();
     fout.close();
 }
@@ -432,6 +443,7 @@ void encrypt(string origin_filename, string keys) {
 void decrypt(string encrypt_filename, string keys) {
     int index = 0;
     char buffer_c;
+    clock_t start, end;
     unsigned char buffer[64];
     string filename_out = "__";
 
@@ -439,6 +451,9 @@ void decrypt(string encrypt_filename, string keys) {
         filename_out += encrypt_filename[i];
     }
     ifstream fin(encrypt_filename.c_str());
+    fin.seekg(0, std::ios::end);
+    long long int length = fin.tellg();
+    fin.seekg(0, std::ios::beg);
     ofstream fout(filename_out.c_str());
     if(fin.fail() || fout.fail()) {
         cout << "[E]: Open file failed." << endl;
@@ -448,7 +463,8 @@ void decrypt(string encrypt_filename, string keys) {
     deque<deque<unsigned char>> keys_arry = test.init(keys);
     File_class test_file;
     deque<unsigned char> result;
-    
+   
+    start = clock();
     while(fin.get(buffer_c)) {
         buffer[index] = buffer_c;
         if(index == 63) {
@@ -460,6 +476,11 @@ void decrypt(string encrypt_filename, string keys) {
         index++;
         index %= 64;
     }
+    end = clock();
+    double time_used = (end - start) / CLOCKS_PER_SEC;
+    double speed = static_cast<double>(length) / time_used;
+    cout << "[I]: Encrypt time was: " << time_used << " second." << endl;
+    cout << "[I]: Encrypt speed was: " << speed / 1024 << "kB/s." << endl;
     fin.close();
     fout.close();
 }
@@ -478,6 +499,7 @@ int main(int argc, char * argv[]) {
     } 
     string op1 = argv[1];
     string op2 = argv[3];
+   
     if((op1 == "-e" || op1 == "-d") && op2 == "-p") {
         filename = argv[2];
         keys = argv[4];
